@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { type Href, useRouter } from "expo-router";
+import { useAuth } from "@clerk/expo";
+import { type Href, Redirect, useRouter } from "expo-router";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   StyleSheet,
@@ -42,6 +44,21 @@ function SpeechBubble({
 
 export default function OnboardingScreen() {
   const router = useRouter();
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+        <View className="flex-1 items-center justify-center bg-background">
+          <ActivityIndicator size="large" color="#6C47FF" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isSignedIn) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>

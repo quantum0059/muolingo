@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Keyboard,
   KeyboardAvoidingView,
   Modal,
@@ -18,10 +18,18 @@ const CODE_LENGTH = 6;
 type VerificationModalProps = {
   visible: boolean;
   onClose: () => void;
+  onVerify: (code: string) => void | Promise<void>;
+  isLoading?: boolean;
+  error?: string | null;
 };
 
-export function VerificationModal({ visible, onClose }: VerificationModalProps) {
-  const router = useRouter();
+export function VerificationModal({
+  visible,
+  onClose,
+  onVerify,
+  isLoading = false,
+  error = null,
+}: VerificationModalProps) {
   const inputRef = useRef<TextInput>(null);
   const [code, setCode] = useState("");
 
@@ -31,18 +39,24 @@ export function VerificationModal({ visible, onClose }: VerificationModalProps) 
       const timer = setTimeout(() => inputRef.current?.focus(), 300);
       return () => clearTimeout(timer);
     }
+
     Keyboard.dismiss();
     return undefined;
   }, [visible]);
 
-  const handleChange = (value: string) => {
+  useEffect(() => {
+    if (error) {
+      setCode("");
+    }
+  }, [error]);
+
+  const handleChange = async (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, CODE_LENGTH);
     setCode(digits);
 
-    if (digits.length === CODE_LENGTH) {
+    if (digits.length === CODE_LENGTH && !isLoading) {
       Keyboard.dismiss();
-      onClose();
-      router.replace("/");
+      await onVerify(digits);
     }
   };
 
@@ -77,28 +91,46 @@ export function VerificationModal({ visible, onClose }: VerificationModalProps) 
                 continue.
               </Text>
 
-              <Pressable
-                className="mt-8 flex-row justify-center gap-2.5"
-                onPress={() => inputRef.current?.focus()}
-                accessibilityRole="button"
-                accessibilityLabel="Enter verification code"
-              >
-                {Array.from({ length: CODE_LENGTH }).map((_, index) => {
-                  const digit = code[index] ?? "";
-                  const isActive = index === code.length;
+              <View className="mt-8">
+                <Pressable
+                  className="flex-row justify-center gap-2.5"
+                  onPress={() => inputRef.current?.focus()}
+                  accessibilityRole="button"
+                  accessibilityLabel="Enter verification code"
+                >
+                  {Array.from({ length: CODE_LENGTH }).map((_, index) => {
+                    const digit = code[index] ?? "";
+                    const isActive = index === code.length;
 
-                  return (
-                    <View
-                      key={index}
-                      className={`h-14 w-11 items-center justify-center rounded-xl border-2 ${
-                        isActive ? "border-lingua-purple" : "border-border"
-                      } bg-surface`}
-                    >
-                      <Text className="text--h3 text-foreground">{digit}</Text>
-                    </View>
-                  );
-                })}
-              </Pressable>
+                    return (
+                      <View
+                        key={index}
+                        className={`h-14 w-11 items-center justify-center rounded-xl border-2 ${
+                          error
+                            ? "border-red-400"
+                            : isActive
+                              ? "border-lingua-purple"
+                              : "border-border"
+                        } bg-surface`}
+                      >
+                        <Text className="text--h3 text-foreground">
+                          {digit}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </Pressable>
+
+                {error ? (
+                  <Text className="text--body-sm mt-3 text-center text-red-500">
+                    {error}
+                  </Text>
+                ) : null}
+              </View>
+
+              {isLoading ? (
+                <ActivityIndicator className="mt-4" color="#6C47FF" />
+              ) : null}
 
               <TextInput
                 ref={inputRef}
@@ -108,6 +140,7 @@ export function VerificationModal({ visible, onClose }: VerificationModalProps) 
                 maxLength={CODE_LENGTH}
                 textContentType="oneTimeCode"
                 autoComplete="one-time-code"
+                editable={!isLoading}
                 style={styles.hiddenInput}
                 accessibilityLabel="Verification code input"
               />

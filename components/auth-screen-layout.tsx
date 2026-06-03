@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { type Href, useRouter } from "expo-router";
-import { type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -15,6 +16,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { VerificationModal } from "@/components/verification-modal";
 import { images } from "@/constants/images";
 
+type VerificationModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  onVerify: (code: string) => void | Promise<void>;
+  isLoading?: boolean;
+  error?: string | null;
+};
+
 type AuthScreenLayoutProps = {
   title: string;
   subtitle: string;
@@ -23,6 +32,14 @@ type AuthScreenLayoutProps = {
   footerLinkLabel: string;
   footerHref: Href;
   children: ReactNode;
+  onPrimaryPress: () => void | Promise<void>;
+  isLoading?: boolean;
+  showCaptcha?: boolean;
+  verificationModal: VerificationModalProps;
+  onGooglePress?: () => void | Promise<void>;
+  onApplePress?: () => void | Promise<void>;
+  onFacebookPress?: () => void | Promise<void>;
+  socialError?: string | null;
 };
 
 function AuthSparkle({
@@ -53,9 +70,16 @@ export function AuthScreenLayout({
   footerLinkLabel,
   footerHref,
   children,
+  onPrimaryPress,
+  isLoading = false,
+  showCaptcha = false,
+  verificationModal,
+  onGooglePress,
+  onApplePress,
+  onFacebookPress,
+  socialError = null,
 }: AuthScreenLayoutProps) {
   const router = useRouter();
-  const [verificationVisible, setVerificationVisible] = useState(false);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -97,13 +121,19 @@ export function AuthScreenLayout({
 
         <Pressable
           className="mt-6 rounded-2xl bg-lingua-purple py-4 active:opacity-90"
-          onPress={() => setVerificationVisible(true)}
+          onPress={onPrimaryPress}
+          disabled={isLoading}
           accessibilityRole="button"
           accessibilityLabel={primaryButtonLabel}
+          style={isLoading ? styles.buttonDisabled : undefined}
         >
-          <Text className="text--h4 text-center text-white">
-            {primaryButtonLabel}
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text className="text--h4 text-center text-white">
+              {primaryButtonLabel}
+            </Text>
+          )}
         </Pressable>
 
         <View className="mt-8 flex-row items-center gap-3">
@@ -117,18 +147,27 @@ export function AuthScreenLayout({
             icon="logo-google"
             iconColor="#4285F4"
             label="Continue with Google"
+            onPress={onGooglePress}
           />
           <SocialAuthButton
             icon="logo-facebook"
             iconColor="#1877F2"
             label="Continue with Facebook"
+            onPress={onFacebookPress}
           />
           <SocialAuthButton
             icon="logo-apple"
             iconColor="#0D132B"
             label="Continue with Apple"
+            onPress={onApplePress}
           />
         </View>
+
+        {socialError ? (
+          <Text className="text--body-sm mt-3 text-center text-red-500">
+            {socialError}
+          </Text>
+        ) : null}
 
         <View className="mt-8 flex-row items-center justify-center pb-6">
           <Text className="text--body-md text-secondary">{footerText} </Text>
@@ -142,11 +181,16 @@ export function AuthScreenLayout({
             </Text>
           </Pressable>
         </View>
+
+        {showCaptcha ? <View nativeID="clerk-captcha" /> : null}
       </ScrollView>
 
       <VerificationModal
-        visible={verificationVisible}
-        onClose={() => setVerificationVisible(false)}
+        visible={verificationModal.visible}
+        onClose={verificationModal.onClose}
+        onVerify={verificationModal.onVerify}
+        isLoading={verificationModal.isLoading}
+        error={verificationModal.error}
       />
     </SafeAreaView>
   );
@@ -156,14 +200,17 @@ function SocialAuthButton({
   icon,
   iconColor,
   label,
+  onPress,
 }: {
   icon: keyof typeof Ionicons.glyphMap;
   iconColor: string;
   label: string;
+  onPress?: () => void | Promise<void>;
 }) {
   return (
     <Pressable
       className="flex-row items-center justify-center gap-3 rounded-2xl border border-border bg-background py-3.5 active:bg-surface"
+      onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
     >
@@ -206,5 +253,8 @@ const styles = StyleSheet.create({
     right: 28,
     top: 12,
     zIndex: 10,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
 });
