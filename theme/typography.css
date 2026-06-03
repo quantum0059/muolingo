@@ -1,0 +1,28 @@
+@layer theme {
+  @theme {
+    /* Typography scale — sizes & line heights from design system */
+    --text-h1: 32px;
+    --text-h1--line-height: 1.2;
+
+    --text-h2: 24px;
+    --text-h2--line-height: 1.3;
+
+    --text-h3: 20px;
+    --text-h3--line-height: 1.3;
+
+    --text-h4: 16px;
+    --text-h4--line-height: 1.4;
+
+    --text-body-lg: 16px;
+    --text-body-lg--line-height: 1.6;
+
+    --text-body-md: 14px;
+    --text-body-md--line-height: 1.6;
+
+    --text-body-sm: 13px;
+    --text-body-sm--line-height: 1.6;
+
+    --text-caption: 11px;
+    --text-caption--line-height: 1.4;
+  }
+}

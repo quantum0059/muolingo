@@ -1,0 +1,23 @@
+@layer theme {
+  @theme {
+    /* Primary */
+    --color-lingua-purple: #6c4ef5;
+    --color-lingua-deep-purple: #5b3bf6;
+    --color-lingua-blue: #4d8bff;
+    --color-lingua-green: #21c16b;
+
+    /* Semantic */
+    --color-success: #21c16b;
+    --color-warning: #ffc800;
+    --color-streak: #ff8a00;
+    --color-error: #ff4d4f;
+    --color-info: #4d8bff;
+
+    /* Neutrals — TEXT / PRIMARY, TEXT / SECONDARY, BORDER, SURFACE, BACKGROUND */
+    --color-foreground: #0d132b;
+    --color-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-surface: #f6f7fb;
+    --color-background: #ffffff;
+  }
+}

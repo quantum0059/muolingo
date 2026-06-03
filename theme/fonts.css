@@ -1,0 +1,41 @@
+@layer theme {
+  @theme {
+    --font-poppins-regular: "Poppins-Regular";
+    --font-poppins-medium: "Poppins-Medium";
+    --font-poppins-semibold: "Poppins-SemiBold";
+    --font-poppins-bold: "Poppins-Bold";
+  }
+}
+
+:root {
+  --font-sans: var(--font-poppins-regular);
+
+  @media ios {
+    --font-sans: var(--font-poppins-regular);
+  }
+
+  @media android {
+    --font-sans: var(--font-poppins-regular);
+  }
+}
+
+/* Map Tailwind font-weight utilities to Poppins font files (required on React Native) */
+@utility font-normal {
+  font-family: var(--font-poppins-regular);
+  font-weight: 400;
+}
+
+@utility font-medium {
+  font-family: var(--font-poppins-medium);
+  font-weight: 500;
+}
+
+@utility font-semibold {
+  font-family: var(--font-poppins-semibold);
+  font-weight: 600;
+}
+
+@utility font-bold {
+  font-family: var(--font-poppins-bold);
+  font-weight: 700;
+}
