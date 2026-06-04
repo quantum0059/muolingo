@@ -40,6 +40,13 @@ export default function TabsLayout() {
           title: "Profile",
         }}
       />
+      <Tabs.Screen
+        name="lesson/[id]"
+        options={{
+          href: null,
+          title: "AI Teacher Lesson",
+        }}
+      />
     </Tabs>
   );
 }

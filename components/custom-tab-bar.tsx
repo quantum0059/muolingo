@@ -76,19 +76,31 @@ export function CustomTabBar({
 
   const barHorizontalPadding = homeSpacing.lg;
   const barWidth = width - barHorizontalPadding * 2;
-  const tabCount = state.routes.length;
+  const tabRoutes = state.routes.filter(
+    (route) => !route.name.startsWith("lesson")
+  );
+  const tabCount = tabRoutes.length;
   const tabWidth = barWidth / tabCount;
 
+  const activeRoute = state.routes[state.index];
+  const isAudioLesson =
+    activeRoute?.name === "lesson/[id]" ||
+    activeRoute?.name.startsWith("lesson");
+  const learnTabIndex = tabRoutes.findIndex((route) => route.name === "learn");
+  const highlightedIndex = isAudioLesson && learnTabIndex >= 0
+    ? learnTabIndex
+    : tabRoutes.findIndex((route) => route.key === activeRoute?.key);
+
   const indicatorX = useSharedValue(
-    state.index * tabWidth + (tabWidth - CIRCLE_SIZE) / 2
+    highlightedIndex * tabWidth + (tabWidth - CIRCLE_SIZE) / 2
   );
 
   useEffect(() => {
     indicatorX.value = withSpring(
-      state.index * tabWidth + (tabWidth - CIRCLE_SIZE) / 2,
+      highlightedIndex * tabWidth + (tabWidth - CIRCLE_SIZE) / 2,
       springConfig
     );
-  }, [indicatorX, state.index, tabWidth]);
+  }, [highlightedIndex, indicatorX, tabWidth]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: indicatorX.value }],
@@ -102,10 +114,10 @@ export function CustomTabBar({
           style={[styles.indicator, indicatorStyle]}
         />
 
-        {state.routes.map((route, index) => {
+        {tabRoutes.map((route, index) => {
           const config = TAB_CONFIG.find((tab) => tab.routeName === route.name);
           const descriptor = descriptors[route.key];
-          const isFocused = state.index === index;
+          const isFocused = highlightedIndex === index;
 
           if (!config) {
             return null;
