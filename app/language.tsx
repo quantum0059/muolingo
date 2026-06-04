@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -16,9 +15,6 @@ import { images } from "@/constants/images";
 import { languages } from "@/data/languages";
 import type { LanguageId } from "@/types/learning";
 
-const HORIZONTAL_PADDING = 16;
-const PURPLE = "#6C4EF5";
-const SELECTED_BG = "#F3F0FF";
 const POPULAR_COUNT = 6;
 
 export default function LanguageScreen() {
@@ -46,40 +42,46 @@ export default function LanguageScreen() {
   }, [searchQuery, showAll]);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       {/* Header */}
-      <View style={styles.header}>
+      <View className="mt-1 h-12 flex-row items-center px-4">
         <Pressable
           onPress={() => router.back()}
           hitSlop={8}
-          style={styles.backButton}
+          unstable_pressDelay={0}
+          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+          className="z-[1] h-10 w-10 items-center justify-center"
         >
           <Ionicons name="chevron-back" size={28} color="#0D132B" />
         </Pressable>
-        <Text style={styles.headerTitle}>Choose a language</Text>
+        <Text className="absolute inset-x-0 text-center text-[17px] font-semibold text-foreground">
+          Choose a language
+        </Text>
       </View>
 
       {/* Search */}
-      <View style={styles.searchBar}>
+      <View className="mx-4 mt-2 h-12 flex-row items-center rounded-3xl border border-border bg-white px-4">
         <Ionicons name="search" size={18} color="#9CA3AF" />
         <TextInput
           value={searchQuery}
           onChangeText={setSearchQuery}
           placeholder="Search languages"
           placeholderTextColor="#9CA3AF"
-          style={styles.searchInput}
+          className="ml-2.5 flex-1 text-base font-normal text-foreground"
         />
       </View>
 
       {/* Popular */}
       {!searchQuery.trim() && (
-        <Text style={styles.sectionTitle}>Popular</Text>
+        <Text className="mx-4 mb-2 mt-4 text-base font-semibold text-foreground">
+          Popular
+        </Text>
       )}
 
       {/* Scrollable Language List */}
       <FlatList
-        style={styles.languageList}
-        contentContainerStyle={styles.languageListContent}
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 16 }}
         data={filteredLanguages}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -88,23 +90,34 @@ export default function LanguageScreen() {
           return (
             <Pressable
               onPress={() => setSelectedId(lang.id)}
-              style={[
-                styles.languageRow,
-                isSelected && styles.languageRowSelected,
-              ]}
+              unstable_pressDelay={0}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.7 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              })}
+              className={`mb-2 flex-row items-center rounded-2xl px-4 py-4 ${
+                isSelected
+                  ? "border border-lingua-purple bg-[#F3F0FF]"
+                  : "border border-transparent"
+              }`}
             >
+              {/* Larger flag */}
               <Image
                 source={{ uri: lang.flagEmoji }}
-                style={styles.flag}
+                style={{ width: 52, height: 52, borderRadius: 26 }}
                 contentFit="cover"
               />
-              <View style={styles.languageText}>
-                <Text style={styles.languageName}>{lang.name}</Text>
-                <Text style={styles.learnerCount}>{lang.learnerCount}</Text>
+              <View className="ml-4 flex-1">
+                <Text className="text-[17px] font-semibold text-foreground">
+                  {lang.name}
+                </Text>
+                <Text className="mt-0.5 text-sm font-normal text-secondary">
+                  {lang.learnerCount}
+                </Text>
               </View>
               {isSelected ? (
-                <View style={styles.checkCircle}>
-                  <Ionicons name="checkmark" size={16} color="#FFFFFF" />
+                <View className="h-8 w-8 items-center justify-center rounded-full bg-lingua-purple">
+                  <Ionicons name="checkmark" size={18} color="#FFFFFF" />
                 </View>
               ) : (
                 <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
@@ -114,163 +127,25 @@ export default function LanguageScreen() {
         }}
       />
 
-      {/* Continue Button — sits between list and earth */}
+      {/* Continue Button */}
       <Pressable
-        style={styles.continueButton}
+        unstable_pressDelay={0}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.85 : 1,
+          transform: [{ scale: pressed ? 0.97 : 1 }],
+        })}
+        className="mx-4 mb-2 mt-2 h-14 items-center justify-center rounded-2xl bg-lingua-purple"
         onPress={() => console.log(selectedId)}
       >
-        <Text style={styles.continueButtonText}>Continue</Text>
+        <Text className="text-base font-semibold text-white">Continue</Text>
       </Pressable>
 
       {/* Earth Illustration */}
       <Image
         source={images.earth}
-        style={styles.earth}
+        style={{ width: "100%", height: 160 }}
         contentFit="cover"
       />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-
-  header: {
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: HORIZONTAL_PADDING,
-    marginTop: 4,
-  },
-
-  backButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 1,
-  },
-
-  headerTitle: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    textAlign: "center",
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 17,
-    color: "#0D132B",
-  },
-
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: HORIZONTAL_PADDING,
-    marginTop: 8,
-    paddingHorizontal: 16,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#FFFFFF",
-  },
-
-  searchInput: {
-    flex: 1,
-    marginLeft: 10,
-    fontSize: 16,
-    fontFamily: "Poppins-Regular",
-    color: "#0D132B",
-  },
-
-  sectionTitle: {
-    marginHorizontal: HORIZONTAL_PADDING,
-    marginTop: 16,
-    marginBottom: 8,
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 16,
-    color: "#0D132B",
-  },
-
-  languageList: {
-    flex: 1,
-  },
-
-  languageListContent: {
-    paddingHorizontal: HORIZONTAL_PADDING,
-  },
-
-  languageRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    marginBottom: 4,
-    borderRadius: 16,
-  },
-
-  languageRowSelected: {
-    borderWidth: 1,
-    borderColor: PURPLE,
-    backgroundColor: SELECTED_BG,
-  },
-
-  flag: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-  },
-
-  languageText: {
-    flex: 1,
-    marginLeft: 14,
-  },
-
-  languageName: {
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 16,
-    color: "#0D132B",
-  },
-
-  learnerCount: {
-    marginTop: 2,
-    fontFamily: "Poppins-Regular",
-    fontSize: 13,
-    color: "#6B7280",
-  },
-
-  checkCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: PURPLE,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  // Continue button sits in normal flow between list and earth
-  continueButton: {
-    height: 56,
-    marginHorizontal: HORIZONTAL_PADDING,
-    marginTop: 8,
-    marginBottom: 8,
-    borderRadius: 16,
-    backgroundColor: PURPLE,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  continueButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-  },
-
-  // Earth fills the remaining bottom space
-  earth: {
-    width: "100%",
-    height: 160,
-  },
-});
