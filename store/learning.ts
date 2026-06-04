@@ -2,6 +2,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { posthog } from "@/lib/posthog";
+
 export const LEARNING_STORAGE_KEY = "learning-storage";
 
 export type TodayPlanItemId = "lesson" | "ai-conversation" | "new-words";
@@ -43,6 +45,11 @@ export const useLearningStore = create<LearningState>()(
             ...get().todayPlanCompleted,
             lesson: true,
           },
+        });
+        posthog.capture("lesson_completed", {
+          lesson_id: lessonId,
+          xp_earned: xpReward,
+          total_xp: xp + xpReward,
         });
       },
       setTodayPlanItemCompleted: (id, completed) =>

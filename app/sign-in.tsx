@@ -1,5 +1,6 @@
 import { useAuth, useSignIn } from "@clerk/expo";
 import { type Href, Redirect, useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import { useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 
@@ -19,6 +20,7 @@ export default function SignInScreen() {
   const { signIn, errors, fetchStatus } = useSignIn();
   const { signInWithOAuth, socialError, clearSocialError, setSocialError } =
     useSocialAuth();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -73,6 +75,11 @@ export default function SignInScreen() {
 
     if (error) {
       setVerificationError(error.message ?? "Could not complete sign in.");
+    } else {
+      posthog.identify(email.trim(), {
+        $set: { email: email.trim() },
+      });
+      posthog.capture("user_signed_in", { method: "email" });
     }
   };
 

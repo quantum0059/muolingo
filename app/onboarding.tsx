@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/expo";
 import { type Href, Redirect, useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import {
   ActivityIndicator,
   Image,
@@ -45,6 +46,7 @@ function SpeechBubble({
 export default function OnboardingScreen() {
   const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
+  const posthog = usePostHog();
 
   if (!isLoaded) {
     return (
@@ -117,7 +119,10 @@ export default function OnboardingScreen() {
 
         {/* CTA */}
         <Pressable
-          onPress={() => router.push("/sign-up" as Href)}
+          onPress={() => {
+            posthog.capture("onboarding_started");
+            router.push("/sign-up" as Href);
+          }}
           className="mb-4 flex-row items-center justify-center gap-1 rounded-2xl bg-lingua-purple py-4 active:opacity-90"
           accessibilityRole="button"
           accessibilityLabel="Get Started"

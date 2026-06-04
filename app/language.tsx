@@ -1,6 +1,8 @@
+import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 import { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
@@ -20,6 +22,8 @@ const POPULAR_COUNT = 6;
 
 export default function LanguageScreen() {
   const router = useRouter();
+  const posthog = usePostHog();
+  const { user } = useUser();
   const storedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
   const setSelectedLanguage = useLanguageStore(
     (state) => state.setSelectedLanguage
@@ -27,7 +31,6 @@ export default function LanguageScreen() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<LanguageId>("es");
-  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     if (storedLanguageId) {
@@ -45,12 +48,12 @@ export default function LanguageScreen() {
         )
       : languages;
 
-    if (!query && !showAll) {
+    if (!query) {
       return base.slice(0, POPULAR_COUNT);
     }
 
     return base;
-  }, [searchQuery, showAll]);
+  }, [searchQuery]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -147,6 +150,20 @@ export default function LanguageScreen() {
         })}
         className="mx-4 mb-2 mt-2 h-14 items-center justify-center rounded-2xl bg-lingua-purple"
         onPress={() => {
+          const selectedLang = languages.find((l) => l.id === selectedId);
+          const languageName = selectedLang?.name ?? selectedId;
+
+          posthog.capture("language_selected", {
+            language_code: selectedId,
+            language_name: languageName,
+          });
+
+          if (user?.id) {
+            posthog.identify(user.id, {
+              $set: { preferred_language: selectedId },
+            });
+          }
+
           setSelectedLanguage(selectedId);
           router.replace("/(tabs)");
         }}

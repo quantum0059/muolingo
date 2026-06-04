@@ -2,6 +2,7 @@ import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useMemo } from "react";
+import { usePostHog } from "posthog-react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -28,6 +29,7 @@ import type { LanguageId } from "@/types/learning";
 const FALLBACK_LANGUAGE_ID: LanguageId = "es";
 
 export default function HomeScreen() {
+  const posthog = usePostHog();
   const { user } = useUser();
   const selectedLanguageId = useLanguageStore(
     (state) => state.selectedLanguageId
@@ -148,6 +150,12 @@ export default function HomeScreen() {
                 </View>
                 <Pressable
                   unstable_pressDelay={0}
+                  onPress={() =>
+                    posthog.capture("lesson_continued", {
+                      lesson_id: currentLesson?.id,
+                      language_id: languageId,
+                    })
+                  }
                   style={({ pressed }) => [
                     styles.continueButton,
                     {
@@ -189,12 +197,16 @@ export default function HomeScreen() {
               key={item.id}
               item={item}
               completed={todayPlanCompleted[item.id]}
-              onToggle={() =>
-                setTodayPlanItemCompleted(
-                  item.id,
-                  !todayPlanCompleted[item.id]
-                )
-              }
+              onToggle={() => {
+                const nextCompleted = !todayPlanCompleted[item.id];
+                if (nextCompleted) {
+                  posthog.capture("daily_plan_item_completed", {
+                    item_id: item.id,
+                    language_id: languageId,
+                  });
+                }
+                setTodayPlanItemCompleted(item.id, nextCompleted);
+              }}
             />
           ))}
         </View>
@@ -218,6 +230,11 @@ export default function HomeScreen() {
             <Pressable
               accessibilityLabel="Start AI video call"
               unstable_pressDelay={0}
+              onPress={() =>
+                posthog.capture("ai_video_call_tapped", {
+                  language_id: languageId,
+                })
+              }
               style={({ pressed }) => [
                 styles.videoButton,
                 {
