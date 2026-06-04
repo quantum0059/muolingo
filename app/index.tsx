@@ -53,6 +53,16 @@ export default function Index() {
         Learn languages with your AI teacher
       </Text>
       <Pressable
+        onPress={() => router.push("/language")}
+        className="mt-2 rounded-2xl bg-lingua-purple px-8 py-3 active:opacity-90"
+        accessibilityRole="button"
+        accessibilityLabel="Choose a language"
+      >
+        <Text className="text--body-md text-center font-semibold text-white">
+          Choose a language
+        </Text>
+      </Pressable>
+      <Pressable
         onPress={handleSignOut}
         disabled={isSigningOut}
         className="mt-4 rounded-2xl border border-border px-8 py-3 active:opacity-90"
