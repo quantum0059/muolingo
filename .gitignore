@@ -2,6 +2,10 @@
 
 # dependencies
 node_modules/
+.env
+.env.local
+.expo/
+dist/
 
 # Expo
 .expo/
@@ -42,3 +46,5 @@ app-example
 /ios
 /android
 .env
+
+
