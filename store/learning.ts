@@ -31,7 +31,15 @@ export const useLearningStore = create<LearningState>()(
       xp: 15,
       dailyXpGoal: 20,
       streak: 12,
-      completedLessonIds: ["es-u1-l1", "es-u1-l2", "es-u1-l3", "es-u2-l1"],
+      completedLessonIds: [
+        "es-u1-l1",
+        "es-u1-l2",
+        "es-u1-l3",
+        "es-u2-l1",
+        "es-u2-l2",
+        "es-u3-l1",
+        "es-u3-l2",
+      ],
       todayPlanCompleted: DEFAULT_TODAY_PLAN,
       completeLesson: (lessonId, xpReward) => {
         const { completedLessonIds, xp } = get();

@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
+import { router } from "expo-router";
 import { useMemo } from "react";
 import { usePostHog } from "posthog-react-native";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -185,6 +186,7 @@ export default function HomeScreen() {
           <Pressable
             hitSlop={homeSpacing.sm}
             unstable_pressDelay={0}
+            onPress={() => router.push("/(tabs)/learn")}
             style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
             <Text style={styles.planViewAll}>View all</Text>

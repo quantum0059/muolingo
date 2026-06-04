@@ -1,3 +1,7 @@
+import {
+  buildBasicsLessons,
+  buildUnit3PathLessons,
+} from "@/data/path-lessons";
 import type { LanguageId, Lesson } from "@/types/learning";
 
 function buildAiTeacherPrompt(
@@ -745,6 +749,8 @@ export const lessons: Lesson[] = [
       "Arigatō! Let's practice thanking someone and responding politely in Japanese.",
     ),
   },
+  ...buildUnit3PathLessons(),
+  ...buildBasicsLessons(),
 ];
 
 export function getLessonById(lessonId: string): Lesson | undefined {
