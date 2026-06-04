@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FlatList,
   Pressable,
@@ -13,16 +13,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
 import { languages } from "@/data/languages";
+import { useLanguageStore } from "@/store/language";
 import type { LanguageId } from "@/types/learning";
 
 const POPULAR_COUNT = 6;
 
 export default function LanguageScreen() {
   const router = useRouter();
+  const storedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
+  const setSelectedLanguage = useLanguageStore(
+    (state) => state.setSelectedLanguage
+  );
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<LanguageId>("es");
   const [showAll, setShowAll] = useState(false);
+
+  useEffect(() => {
+    if (storedLanguageId) {
+      setSelectedId(storedLanguageId);
+    }
+  }, [storedLanguageId]);
 
   const filteredLanguages = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -135,7 +146,10 @@ export default function LanguageScreen() {
           transform: [{ scale: pressed ? 0.97 : 1 }],
         })}
         className="mx-4 mb-2 mt-2 h-14 items-center justify-center rounded-2xl bg-lingua-purple"
-        onPress={() => console.log(selectedId)}
+        onPress={() => {
+          setSelectedLanguage(selectedId);
+          router.replace("/(tabs)");
+        }}
       >
         <Text className="text-base font-semibold text-white">Continue</Text>
       </Pressable>

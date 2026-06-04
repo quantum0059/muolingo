@@ -1,23 +1,18 @@
-import { useAuth, useClerk } from "@clerk/expo";
-import { Redirect, useRouter } from "expo-router";
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from "react-native";
+import { useAuth } from "@clerk/expo";
+import { Redirect } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
 
-import { images } from "@/constants/images";
+import { useLanguageStoreHydration } from "@/hooks/use-language-store-hydration";
+import { useLanguageStore } from "@/store/language";
 
 export default function Index() {
-  const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
-  const { signOut } = useClerk();
-  const [isSigningOut, setIsSigningOut] = useState(false);
+  const hasLanguageStoreHydrated = useLanguageStoreHydration();
+  const selectedLanguageId = useLanguageStore(
+    (state) => state.selectedLanguageId
+  );
 
-  if (!isLoaded) {
+  if (!isLoaded || !hasLanguageStoreHydrated) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" color="#6C47FF" />
@@ -29,54 +24,9 @@ export default function Index() {
     return <Redirect href="/onboarding" />;
   }
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
+  if (!selectedLanguageId) {
+    return <Redirect href="/language" />;
+  }
 
-    try {
-      await signOut();
-      router.replace("/onboarding");
-    } finally {
-      setIsSigningOut(false);
-    }
-  };
-
-  return (
-    <View className="flex-1 items-center justify-center gap-4 bg-background px-6">
-      <Image
-        source={images.mascotLogo}
-        className="h-16 w-40"
-        resizeMode="contain"
-        accessibilityLabel="muolingo logo"
-      />
-      <Text className="text--h1 text-foreground">muolingo</Text>
-      <Text className="text--body-md text-center text-secondary">
-        Learn languages with your AI teacher
-      </Text>
-      <Pressable
-        onPress={() => router.push("/language")}
-        className="mt-2 rounded-2xl bg-lingua-purple px-8 py-3 active:opacity-90"
-        accessibilityRole="button"
-        accessibilityLabel="Choose a language"
-      >
-        <Text className="text--body-md text-center font-semibold text-white">
-          Choose a language
-        </Text>
-      </Pressable>
-      <Pressable
-        onPress={handleSignOut}
-        disabled={isSigningOut}
-        className="mt-4 rounded-2xl border border-border px-8 py-3 active:opacity-90"
-        accessibilityRole="button"
-        accessibilityLabel="Sign out"
-      >
-        {isSigningOut ? (
-          <ActivityIndicator color="#6C47FF" />
-        ) : (
-          <Text className="text--body-md text-center text-secondary">
-            Sign Out
-          </Text>
-        )}
-      </Pressable>
-    </View>
-  );
+  return <Redirect href="/(tabs)" />;
 }
