@@ -50,3 +50,9 @@ app-example
 .env
 
 
+
+# IDE
+.idea/
+
+# ARMS cache
+arms_cache/
