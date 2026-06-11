@@ -14,6 +14,8 @@ import type { TeacherBubble } from "@/lib/audio-lesson-display";
 type AudioLessonStageProps = {
   bubble: TeacherBubble;
   subtitlesOn: boolean;
+  teacherCaption: string | null;
+  learnerCaption: string | null;
   onToggleSpeaker: () => void;
 };
 
@@ -24,8 +26,14 @@ const STAGE_MIN_HEIGHT = 400;
 export function AudioLessonStage({
   bubble,
   subtitlesOn,
+  teacherCaption,
+  learnerCaption,
   onToggleSpeaker,
 }: AudioLessonStageProps) {
+  const displayTeacherText = subtitlesOn
+    ? (teacherCaption ?? bubble.phrase)
+    : bubble.phrase;
+  const showLearnerCaption = subtitlesOn && Boolean(learnerCaption);
   const { height: windowHeight } = useWindowDimensions();
   const stageHeight = Math.max(
     STAGE_MIN_HEIGHT,
@@ -61,10 +69,17 @@ export function AudioLessonStage({
           />
         </View>
 
+        {showLearnerCaption ? (
+          <View style={styles.learnerCaption}>
+            <Text style={styles.learnerCaptionLabel}>You</Text>
+            <Text style={styles.learnerCaptionText}>{learnerCaption}</Text>
+          </View>
+        ) : null}
+
         <View style={styles.bubble}>
           <View style={styles.bubbleTextCol}>
-            <Text style={styles.bubblePhrase}>{bubble.phrase}</Text>
-            {subtitlesOn ? (
+            <Text style={styles.bubblePhrase}>{displayTeacherText}</Text>
+            {subtitlesOn && !teacherCaption ? (
               <Text style={styles.bubbleTranslation}>{bubble.translation}</Text>
             ) : null}
           </View>
@@ -131,6 +146,31 @@ const styles = StyleSheet.create({
   mascot: {
     width: 248,
     height: 248,
+  },
+  learnerCaption: {
+    position: "absolute",
+    left: audioLessonSpacing.lg,
+    right: audioLessonSpacing.lg,
+    bottom: 96,
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: audioLessonRadius.bubble,
+    paddingVertical: audioLessonSpacing.sm,
+    paddingHorizontal: audioLessonSpacing.md,
+    ...audioLessonShadow(2),
+  },
+  learnerCaptionLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: audioLessonColors.purple,
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginBottom: 2,
+  },
+  learnerCaptionText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: audioLessonColors.textPrimary,
+    lineHeight: 21,
   },
   bubble: {
     position: "absolute",

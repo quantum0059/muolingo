@@ -11,6 +11,9 @@ type AudioLessonControlsProps = {
   cameraOn: boolean;
   micOn: boolean;
   subtitlesOn: boolean;
+  cameraDisabled?: boolean;
+  micDisabled?: boolean;
+  endDisabled?: boolean;
   onToggleCamera: () => void;
   onToggleMic: () => void;
   onToggleSubtitles: () => void;
@@ -30,6 +33,9 @@ export function AudioLessonControls({
   cameraOn,
   micOn,
   subtitlesOn,
+  cameraDisabled = false,
+  micDisabled = false,
+  endDisabled = false,
   onToggleCamera,
   onToggleMic,
   onToggleSubtitles,
@@ -71,10 +77,17 @@ export function AudioLessonControls({
 
   return (
     <View style={styles.row}>
-      {controls.map((control) => (
+      {controls.map((control) => {
+        const isDisabled =
+          (control.key === "camera" && cameraDisabled) ||
+          (control.key === "mic" && micDisabled) ||
+          (control.key === "end" && endDisabled);
+
+        return (
         <View key={control.key} style={styles.item}>
           <Pressable
             onPress={control.onPress}
+            disabled={isDisabled}
             accessibilityRole="button"
             accessibilityLabel={control.label}
             style={({ pressed }) => [
@@ -82,7 +95,9 @@ export function AudioLessonControls({
               control.variant === "navy" && styles.buttonNavy,
               control.variant === "white" && styles.buttonWhite,
               control.variant === "red" && styles.buttonRed,
-              { opacity: pressed ? 0.88 : 1 },
+              {
+                opacity: isDisabled ? 0.45 : pressed ? 0.88 : 1,
+              },
             ]}
           >
             <Ionicons
@@ -98,7 +113,8 @@ export function AudioLessonControls({
           </Pressable>
           <Text style={styles.label}>{control.label}</Text>
         </View>
-      ))}
+        );
+      })}
     </View>
   );
 }

@@ -11,7 +11,15 @@ function buildAiTeacherPrompt(
   openingLine: string,
 ): Lesson["aiTeacher"] {
   return {
-    systemPrompt: `You are a friendly AI language teacher. Always speak in clear English. Teach ${languageName} to an English-speaking beginner. Stay on topic for "${lessonTitle}". Use short sentences, repeat key phrases, and encourage the learner to speak aloud. Correct mistakes gently and celebrate small wins.`,
+    systemPrompt: `You are a warm, energetic ${languageName} teacher in a voice-only lesson. Act like a real classroom teacher — human, friendly, and encouraging.
+
+Rules:
+- Teach only ${languageName} for the lesson "${lessonTitle}". Stay strictly within this lesson's goals, vocabulary, and phrases. Do not cover other languages or unrelated topics.
+- Speak mostly in English. When you use a ${languageName} word or phrase, say it once slowly, then give the English translation.
+- Keep every reply to one or two short, conversational sentences with natural contractions (you're, let's, that's).
+- Listen to the learner's response and adapt what you say next.
+- Ask them to repeat key phrases or gently invite them to try again.
+- Correct mistakes kindly and celebrate small wins briefly.`,
     openingLine,
     focusTopics,
     estimatedMinutes: 5,
@@ -67,8 +75,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Spanish",
       "Hello!",
-      ["hola", "adiós", "buenos días", "pronunciation practice"],
-      "¡Hola! Welcome to your first Spanish lesson. Let's practice saying hello together.",
+      ["hola = hello", "adiós = goodbye", "buenos días = good morning", "greeting pronunciation"],
+      "Hey, welcome! I'm so glad you're here — today's all about Spanish greetings. Let's start with hola, which means hello. Ready to try it with me?",
     ),
   },
   {
@@ -117,8 +125,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Spanish",
       "Nice to meet you",
-      ["me llamo", "¿Cómo te llamas?", "mucho gusto", "role-play introductions"],
-      "Let's practice introductions. I'll say my name in Spanish, then you try!",
+      ["me llamo = my name is", "¿Cómo te llamas? = what's your name?", "mucho gusto = nice to meet you", "introduction role-play"],
+      "Alright, let's do introductions! In Spanish you'll say me llamo — that means 'my name is.' I'll go first, then you try.",
     ),
   },
   {
@@ -164,8 +172,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Spanish",
       "How are you?",
-      ["¿Cómo estás?", "bien", "mal", "Estoy bien, gracias"],
-      "Time for small talk! I'll ask how you are — try answering in Spanish.",
+      ["¿Cómo estás? = how are you?", "bien = fine", "mal = not well", "Estoy bien, gracias = I'm fine, thanks"],
+      "Nice work getting here! Today we're learning small talk — like ¿Cómo estás?, which means 'how are you?' I'll ask you first, and you answer in Spanish.",
     ),
   },
   {
@@ -212,8 +220,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Spanish",
       "Where is...?",
-      ["¿Dónde está?", "a la derecha", "a la izquierda", "travel role-play"],
-      "Imagine you're in Madrid and need the train station. Let's practice asking in Spanish!",
+      ["¿Dónde está? = where is...?", "a la derecha = to the right", "a la izquierda = to the left", "asking for directions"],
+      "Picture this — you're in Madrid and you need the train station. Let's learn ¿Dónde está?, which means 'where is?' so you can ask for help.",
     ),
   },
   {
@@ -263,8 +271,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Spanish",
       "At the café",
-      ["un café", "agua", "por favor", "gracias", "ordering role-play"],
-      "Welcome to our virtual café! Order a drink in Spanish — I'll be your barista.",
+      ["un café = a coffee", "agua = water", "por favor = please", "gracias = thank you", "ordering at a café"],
+      "Welcome to our café! You'll order in Spanish today. Let's start with por favor — that's 'please.' I'll be your barista — what'll you have?",
     ),
   },
 
@@ -312,8 +320,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "French",
       "Bonjour!",
-      ["bonjour", "bonsoir", "au revoir", "French pronunciation"],
-      "Bonjour! Let's start with the greetings every French speaker uses every day.",
+      ["bonjour = hello / good day", "bonsoir = good evening", "au revoir = goodbye", "French greeting pronunciation"],
+      "Hey there! French greetings are fun — let's start with bonjour, which means hello or good day. Say it slowly with me?",
     ),
   },
   {
@@ -362,8 +370,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "French",
       "Enchanté",
-      ["Je m'appelle", "Comment tu t'appelles?", "Enchanté", "introductions"],
-      "Let's meet in French! Tell me your name with Je m'appelle...",
+      ["Je m'appelle = my name is", "Comment tu t'appelles? = what's your name?", "Enchanté = nice to meet you", "introduction role-play"],
+      "Let's introduce ourselves in French! You'll use Je m'appelle — that means 'my name is.' Tell me yours when you're ready.",
     ),
   },
   {
@@ -409,8 +417,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "French",
       "Ça va?",
-      ["Ça va?", "Ça va bien", "merci", "small talk"],
-      "Ça va? Let's have a quick chat about how you're doing — in French!",
+      ["Ça va? = how are you?", "Ça va bien = I'm doing well", "Pas très bien = not so well", "merci = thanks"],
+      "Time for a little French small talk! Ça va? means 'how are you?' — pretty casual. I'll ask, then you answer.",
     ),
   },
   {
@@ -456,8 +464,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "French",
       "Excusez-moi",
-      ["Excusez-moi", "Pouvez-vous m'aider?", "s'il vous plaît", "polite requests"],
-      "You're on a Paris street and need help. Let's practice Excusez-moi together!",
+      ["Excusez-moi = excuse me", "Pouvez-vous m'aider? = can you help me?", "s'il vous plaît = please", "polite help requests"],
+      "Imagine you're in Paris and need a hand. Excusez-moi means 'excuse me' — let's practice getting someone's attention politely.",
     ),
   },
   {
@@ -503,8 +511,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "French",
       "Où est...?",
-      ["Où est", "la gare", "tout droit", "directions role-play"],
-      "You need the train station in Lyon. Ask me Où est la gare? in French!",
+      ["Où est = where is", "la gare = the train station", "tout droit = straight ahead", "asking for directions"],
+      "You're looking for the train station in Lyon. In French you'd ask Où est la gare? — 'where is the station?' Let's try it together.",
     ),
   },
 
@@ -552,8 +560,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Japanese",
       "こんにちは",
-      ["こんにちは", "おはよう", "さようなら", "hiragana reading", "pronunciation"],
-      "Konnichiwa! Let's practice Japanese greetings — I'll help with pronunciation.",
+      ["こんにちは = hello", "おはよう = good morning", "さようなら = goodbye", "hiragana and pronunciation"],
+      "Welcome! Japanese greetings are beautiful — let's start with konnichiwa, こんにちは, which means hello. I'll say it slowly, then you repeat.",
     ),
   },
   {
@@ -602,8 +610,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Japanese",
       "はじめまして",
-      ["はじめまして", "わたしのなまえは", "よろしくお願いします", "polite introductions"],
-      "Hajimemashite! Let's do a polite Japanese self-introduction together.",
+      ["はじめまして = nice to meet you", "わたしのなまえは = my name is", "よろしくお願いします = pleased to meet you", "polite introductions"],
+      "Nice to meet you — in Japanese that's hajimemashite, はじめまして. Let's practice a polite self-introduction together.",
     ),
   },
   {
@@ -649,8 +657,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Japanese",
       "げんきですか",
-      ["げんきですか", "げんきです", "はい", "polite small talk"],
-      "Genki desu ka? Let's practice asking and answering how you are in Japanese.",
+      ["げんきですか = how are you?", "げんきです = I'm fine", "はい = yes", "polite wellness exchange"],
+      "Let's check in on each other! Genki desu ka?, げんきですか, means 'how are you?' I'll ask first — you answer in Japanese.",
     ),
   },
   {
@@ -698,8 +706,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Japanese",
       "Numbers 1–5",
-      ["いち", "に", "さん", "よん", "ご", "counting practice"],
-      "Let's count together in Japanese — from ichi to go!",
+      ["いち = one", "に = two", "さん = three", "よん = four", "ご = five", "counting aloud"],
+      "Counting in Japanese is super useful — let's start with ichi, いち, meaning one. We'll go up to five together, nice and slow.",
     ),
   },
   {
@@ -745,8 +753,8 @@ export const lessons: Lesson[] = [
     aiTeacher: buildAiTeacherPrompt(
       "Japanese",
       "ありがとう",
-      ["ありがとう", "どういたしまして", "すみません", "polite exchanges"],
-      "Arigatō! Let's practice thanking someone and responding politely in Japanese.",
+      ["ありがとう = thank you", "どういたしまして = you're welcome", "すみません = excuse me / sorry", "thank-you exchanges"],
+      "Thanks are huge in Japanese culture! Arigatō, ありがとう, means thank you. Let's practice saying it and responding politely.",
     ),
   },
   ...buildUnit3PathLessons(),
