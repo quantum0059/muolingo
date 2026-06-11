@@ -16,6 +16,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+Before running locally, make sure `.env` includes:
+
+- `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY` — client auth and server API route verification
+- `CLERK_SECRET_KEY` — server-side Clerk auth for API routes (e.g. Stream token)
+- `STREAM_API_KEY` and `STREAM_SECRET_KEY` — server-side Stream Video tokens and calls
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
