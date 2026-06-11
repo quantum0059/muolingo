@@ -1,6 +1,5 @@
 import { useAuth, useSignUp } from "@clerk/expo";
 import { type Href, Redirect, useRouter } from "expo-router";
-import { usePostHog } from "posthog-react-native";
 import { useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 
@@ -14,6 +13,7 @@ import {
   validatePassword,
 } from "@/lib/auth-errors";
 import { finalizeAuthNavigation } from "@/lib/clerk";
+import { clearPendingSignup, markNewSignup } from "@/lib/posthog-identify";
 
 export default function SignUpScreen() {
   const router = useRouter();
@@ -21,8 +21,6 @@ export default function SignUpScreen() {
   const { signUp, errors, fetchStatus } = useSignUp();
   const { signInWithOAuth, socialError, clearSocialError, setSocialError } =
     useSocialAuth();
-  const posthog = usePostHog();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -127,6 +125,8 @@ export default function SignUpScreen() {
     }
 
     if (signUp.status === "complete") {
+      markNewSignup();
+
       const { error: finalizeError } = await signUp.finalize({
         navigate: ({ session, decorateUrl }) => {
           if (session?.currentTask) {
@@ -139,15 +139,10 @@ export default function SignUpScreen() {
       });
 
       if (finalizeError) {
+        clearPendingSignup();
         setVerificationError(
           finalizeError.message ?? "Could not complete sign up.",
         );
-      } else {
-        posthog.identify(email.trim(), {
-          $set: { email: email.trim() },
-          $set_once: { first_signup_date: new Date().toISOString() },
-        });
-        posthog.capture("user_signed_up", { method: "email" });
       }
     } else {
       setVerificationError("Sign up is not complete yet. Please try again.");

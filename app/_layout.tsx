@@ -9,6 +9,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { PostHogProvider } from "posthog-react-native";
 import { useEffect, useRef } from "react";
 
+import { PostHogUserIdentifier } from "@/components/posthog-user-identifier";
 import { CLERK_PUBLISHABLE_KEY } from "@/lib/clerk";
 import { posthog } from "@/lib/posthog";
 import { fontAssets } from "@/theme/fonts";
@@ -59,6 +60,7 @@ export default function RootLayout() {
           maxElementsCaptured: 20,
         }}
       >
+        <PostHogUserIdentifier />
         <Stack screenOptions={{ headerShown: false }} />
       </PostHogProvider>
     </ClerkProvider>

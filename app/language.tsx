@@ -1,4 +1,3 @@
-import { useUser } from "@clerk/expo";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -23,7 +22,6 @@ const POPULAR_COUNT = 6;
 export default function LanguageScreen() {
   const router = useRouter();
   const posthog = usePostHog();
-  const { user } = useUser();
   const storedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
   const setSelectedLanguage = useLanguageStore(
     (state) => state.setSelectedLanguage
@@ -157,12 +155,6 @@ export default function LanguageScreen() {
             language_code: selectedId,
             language_name: languageName,
           });
-
-          if (user?.id) {
-            posthog.identify(user.id, {
-              $set: { preferred_language: selectedId },
-            });
-          }
 
           setSelectedLanguage(selectedId);
           router.replace("/(tabs)");

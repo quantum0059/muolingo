@@ -3,6 +3,8 @@ import * as AuthSession from "expo-auth-session";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 
+import { markNewSignup } from "@/lib/posthog-identify";
+
 type OAuthStrategy = "oauth_google" | "oauth_apple" | "oauth_facebook";
 
 export function useSocialAuth() {
@@ -20,7 +22,7 @@ export function useSocialAuth() {
       setSocialError(null);
 
       try {
-        const { createdSessionId, setActive, authSessionResult } =
+        const { createdSessionId, setActive, signUp, authSessionResult } =
           await startSSOFlow({
             strategy,
             redirectUrl,
@@ -34,6 +36,10 @@ export function useSocialAuth() {
         }
 
         if (createdSessionId && setActive) {
+          if (signUp?.status === "complete") {
+            markNewSignup();
+          }
+
           await setActive({ session: createdSessionId });
           router.replace("/");
         }
