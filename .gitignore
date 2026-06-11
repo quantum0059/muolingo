@@ -2,6 +2,8 @@
 
 # dependencies
 node_modules/
+vision-agent/.venv/
+vision-agent/__pycache__/
 .env
 .env.local
 .expo/
