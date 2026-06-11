@@ -9,9 +9,17 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
+      bundleIdentifier: "com.duolingo.app",
       supportsTablet: true,
+      infoPlist: {
+        NSCameraUsageDescription:
+          "Duolingo requires camera access for video lessons.",
+        NSMicrophoneUsageDescription:
+          "Duolingo requires microphone access for audio lessons with your AI teacher.",
+      },
     },
     android: {
+      package: "com.duolingo.app",
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
@@ -41,6 +49,24 @@ export default {
       ],
       "@clerk/expo",
       "expo-secure-store",
+      "@stream-io/video-react-native-sdk",
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          cameraPermission:
+            "Duolingo requires camera access for video lessons.",
+          microphonePermission:
+            "Duolingo requires microphone access for audio lessons with your AI teacher.",
+        },
+      ],
+      [
+        "expo-build-properties",
+        {
+          android: {
+            minSdkVersion: 24,
+          },
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
