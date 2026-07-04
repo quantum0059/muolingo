@@ -12,9 +12,11 @@ type LearningState = {
   xp: number;
   dailyXpGoal: number;
   streak: number;
+  weeklyXpHistory: number[];
   completedLessonIds: string[];
   todayPlanCompleted: Record<TodayPlanItemId, boolean>;
   completeLesson: (lessonId: string, xpReward: number) => void;
+  setDailyXpGoal: (goal: number) => void;
   setTodayPlanItemCompleted: (id: TodayPlanItemId, completed: boolean) => void;
   resetProgress: () => void;
 };
@@ -25,12 +27,15 @@ const DEFAULT_TODAY_PLAN: Record<TodayPlanItemId, boolean> = {
   "new-words": false,
 };
 
+const DEFAULT_WEEKLY_XP_HISTORY = [8, 12, 15, 10, 18, 14, 15];
+
 export const useLearningStore = create<LearningState>()(
   persist(
     (set, get) => ({
       xp: 15,
       dailyXpGoal: 20,
       streak: 12,
+      weeklyXpHistory: DEFAULT_WEEKLY_XP_HISTORY,
       completedLessonIds: [
         "es-u1-l1",
         "es-u1-l2",
@@ -49,6 +54,10 @@ export const useLearningStore = create<LearningState>()(
         set({
           completedLessonIds: [...completedLessonIds, lessonId],
           xp: xp + xpReward,
+          weeklyXpHistory: [
+            ...get().weeklyXpHistory.slice(0, -1),
+            get().weeklyXpHistory[get().weeklyXpHistory.length - 1] + xpReward,
+          ],
           todayPlanCompleted: {
             ...get().todayPlanCompleted,
             lesson: true,
@@ -60,6 +69,7 @@ export const useLearningStore = create<LearningState>()(
           total_xp: xp + xpReward,
         });
       },
+      setDailyXpGoal: (goal) => set({ dailyXpGoal: goal }),
       setTodayPlanItemCompleted: (id, completed) =>
         set((state) => ({
           todayPlanCompleted: {
@@ -70,6 +80,9 @@ export const useLearningStore = create<LearningState>()(
       resetProgress: () =>
         set({
           xp: 0,
+          dailyXpGoal: 20,
+          streak: 0,
+          weeklyXpHistory: [0, 0, 0, 0, 0, 0, 0],
           completedLessonIds: [],
           todayPlanCompleted: {
             lesson: false,
@@ -85,6 +98,7 @@ export const useLearningStore = create<LearningState>()(
         xp: state.xp,
         dailyXpGoal: state.dailyXpGoal,
         streak: state.streak,
+        weeklyXpHistory: state.weeklyXpHistory,
         completedLessonIds: state.completedLessonIds,
         todayPlanCompleted: state.todayPlanCompleted,
       }),
