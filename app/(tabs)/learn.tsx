@@ -95,6 +95,7 @@ export default function LearnScreen() {
             </Pressable>
 
             <View style={styles.headerCenter}>
+              <Text style={styles.brandLabel}>Duolingo</Text>
               <Text style={styles.unitTitle} numberOfLines={1}>
                 {unit?.title ?? "Lessons"}
               </Text>
@@ -189,6 +190,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     paddingHorizontal: learnSpacing.sm,
+  },
+  brandLabel: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    color: learnColors.purple,
+    marginBottom: 3,
   },
   unitTitle: {
     fontSize: 17,

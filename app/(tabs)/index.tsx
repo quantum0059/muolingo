@@ -83,9 +83,12 @@ export default function HomeScreen() {
                 contentFit="cover"
               />
             </View>
-            <Text style={styles.greeting} numberOfLines={1}>
-              Hola, {firstName}! 👋
-            </Text>
+            <View style={styles.headerCopy}>
+              <Text style={styles.brandLabel}>Duolingo</Text>
+              <Text style={styles.greeting} numberOfLines={1}>
+                Hola, {firstName}! 👋
+              </Text>
+            </View>
           </View>
 
           <View style={styles.headerRight}>
@@ -278,6 +281,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: homeSpacing.md,
   },
+  headerCopy: {
+    flex: 1,
+    minWidth: 0,
+    marginLeft: homeSpacing.md,
+  },
   headerRight: {
     flexDirection: "row",
     alignItems: "center",
@@ -296,9 +304,16 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+  brandLabel: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    color: homeColors.purple,
+    marginBottom: 2,
+  },
   greeting: {
     flex: 1,
-    marginLeft: homeSpacing.md,
     fontSize: 20,
     fontWeight: "700",
     color: homeColors.textPrimary,

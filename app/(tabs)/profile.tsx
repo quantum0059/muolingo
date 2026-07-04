@@ -169,7 +169,10 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.headerRow}>
-          <Text className="text--h2 text-foreground">Profile</Text>
+          <View style={styles.headerCopy}>
+            <Text style={styles.brandLabel}>Duolingo</Text>
+            <Text className="text--h2 text-foreground">Profile</Text>
+          </View>
           <Pressable
             onPress={() => router.push("/language")}
             style={({ pressed }) => [
@@ -566,9 +569,22 @@ const styles = StyleSheet.create({
   },
   headerRow: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "space-between",
     marginTop: homeSpacing.xs,
+  },
+  headerCopy: {
+    flex: 1,
+    minWidth: 0,
+    marginRight: homeSpacing.md,
+  },
+  brandLabel: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    color: homeColors.purple,
+    marginBottom: 4,
   },
   ghostButton: {
     flexDirection: "row",

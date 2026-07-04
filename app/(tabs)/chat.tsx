@@ -231,7 +231,8 @@ export default function ChatScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        <View className="flex-row items-center justify-center border-b border-gray-200 px-4 py-3">
+        <View style={styles.header}>
+          <Text style={styles.brandLabel}>Duolingo</Text>
           <Text className="text--h3 text-center text-foreground">
             {language.name} Tutor
           </Text>
@@ -292,6 +293,22 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
     backgroundColor: "#FFFFFF",
+  },
+  header: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  brandLabel: {
+    fontSize: 11,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+    textTransform: "uppercase",
+    color: "#6C47FF",
+    marginBottom: 4,
   },
   listContent: {
     flexGrow: 1,
