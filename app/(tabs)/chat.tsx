@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
+import * as Speech from "expo-speech";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "@clerk/expo";
@@ -17,11 +18,34 @@ import { useLanguageStore } from "@/store/language";
 import { getLanguageById } from "@/data/languages";
 import { fetchApi } from "@/lib/api";
 import { useRouter } from "expo-router";
+import type { LanguageId } from "@/types/learning";
 
 type Message = {
   role: "user" | "assistant" | "system";
   content: string;
 };
+
+const speechLocales: Record<LanguageId, string> = {
+  es: "es-ES",
+  fr: "fr-FR",
+  ja: "ja-JP",
+  ko: "ko-KR",
+  de: "de-DE",
+  zh: "zh-CN",
+};
+
+function getPronunciationText(content: string) {
+  const quotedPhrases = Array.from(
+    content.matchAll(/["“]([^"”]+)["”]/g),
+    (match) => match[1]?.trim()
+  ).filter(Boolean);
+
+  if (quotedPhrases.length > 0) {
+    return quotedPhrases.join(". ");
+  }
+
+  return content.replace(/[👏😊🙂😀]/g, "").trim();
+}
 
 export default function ChatScreen() {
   const router = useRouter();
@@ -32,6 +56,9 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [speakingMessageIndex, setSpeakingMessageIndex] = useState<number | null>(
+    null
+  );
   const flatListRef = useRef<FlatList>(null);
 
   useEffect(() => {
@@ -44,6 +71,12 @@ export default function ChatScreen() {
       ]);
     }
   }, [language, messages.length]);
+
+  useEffect(() => {
+    return () => {
+      Speech.stop();
+    };
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading || !selectedLanguageId) return;
@@ -87,6 +120,30 @@ export default function ChatScreen() {
     }
   };
 
+  const speakMessage = async (message: Message, index: number) => {
+    if (!selectedLanguageId || message.role !== "assistant") {
+      return;
+    }
+
+    if (speakingMessageIndex === index) {
+      await Speech.stop();
+      setSpeakingMessageIndex(null);
+      return;
+    }
+
+    await Speech.stop();
+    setSpeakingMessageIndex(index);
+
+    Speech.speak(getPronunciationText(message.content), {
+      language: speechLocales[selectedLanguageId],
+      pitch: 1,
+      rate: 0.9,
+      onDone: () => setSpeakingMessageIndex(null),
+      onStopped: () => setSpeakingMessageIndex(null),
+      onError: () => setSpeakingMessageIndex(null),
+    });
+  };
+
   if (!selectedLanguageId || !language) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
@@ -110,9 +167,17 @@ export default function ChatScreen() {
     );
   }
 
-  const renderMessage = ({ item }: { item: Message }) => {
+  const renderMessage = ({
+    item,
+    index,
+  }: {
+    item: Message;
+    index: number;
+  }) => {
     const isUser = item.role === "user";
     const isSystem = item.role === "system";
+    const isAssistant = item.role === "assistant";
+    const isSpeaking = speakingMessageIndex === index;
 
     if (isSystem) {
       return (
@@ -130,6 +195,27 @@ export default function ChatScreen() {
             : "self-start rounded-tl-sm bg-gray-100"
         }`}
       >
+        {isAssistant ? (
+          <View className="mb-2 flex-row justify-end">
+            <TouchableOpacity
+              onPress={() => speakMessage(item, index)}
+              accessibilityRole="button"
+              accessibilityLabel={
+                isSpeaking
+                  ? `Stop ${language.name} pronunciation`
+                  : `Play ${language.name} pronunciation`
+              }
+              className="h-8 w-8 items-center justify-center rounded-full bg-white"
+              style={styles.pronunciationButton}
+            >
+              <Ionicons
+                name={isSpeaking ? "stop" : "mic"}
+                size={15}
+                color="#6C47FF"
+              />
+            </TouchableOpacity>
+          </View>
+        ) : null}
         <Text
           className={`text--body-md ${isUser ? "text-white" : "text-foreground"}`}
         >
@@ -211,5 +297,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 16,
     paddingVertical: 20,
+  },
+  pronunciationButton: {
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
   },
 });
