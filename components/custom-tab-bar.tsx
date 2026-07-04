@@ -1,7 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useEffect } from "react";
-import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  Keyboard,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -70,6 +78,7 @@ export function CustomTabBar({
   descriptors,
   navigation,
 }: BottomTabBarProps) {
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const bottomInset = Math.max(insets.bottom, homeSpacing.sm);
@@ -102,9 +111,27 @@ export function CustomTabBar({
     );
   }, [highlightedIndex, indicatorX, tabWidth]);
 
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardVisible(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardVisible(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
   const indicatorStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: indicatorX.value }],
   }));
+
+  if (isKeyboardVisible) {
+    return null;
+  }
 
   return (
     <View style={[styles.wrapper, { paddingBottom: bottomInset }]}>

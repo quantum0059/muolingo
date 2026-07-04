@@ -1,6 +1,7 @@
 @layer theme {
   @theme {
     /* Primary */
+    --color-primary: #6c4ef5;
     --color-lingua-purple: #6c4ef5;
     --color-lingua-deep-purple: #5b3bf6;
     --color-lingua-blue: #4d8bff;
